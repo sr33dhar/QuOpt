@@ -88,7 +88,7 @@ def get_Cost_mpsIX(gamma_beta, Perturbation_const):
     
     Input::
         
-        gamma_beta         : An existing QAOA state upon which one applies the Gamma layer
+        gamma_beta         : The parametrized QAOA state whose cost is to be calculated.
         Perturbation_const : The perturbation constant added to break Z2 symmetry
         
     Output::
@@ -290,6 +290,7 @@ for r in Instance_list:
         Cost_mps_pert = np.zeros([N,N])
         Cost_mps_proj0 = np.zeros([N,N])
         Cost_mps_proj1 = np.zeros([N,N])
+        Cost_diff = np.zeros([N,N])
         
         for i in range(N):
             
@@ -307,7 +308,7 @@ for r in Instance_list:
                 try:
                         
                     gamma_st = QAOA_gamma_block(plus, Gamma[i], C, Dmax, Perturbation_const = 0)
-                    gamma_st_pert = QAOA_gamma_block(plus, Gamma[i], C, Dmax, Perturbation_const = 0.05)
+                    gamma_st_pert = QAOA_gamma_block(plus, Gamma[i], C, Dmax, Perturbation_const = Pert_const)
                     
                     Fail = False
                     
@@ -357,7 +358,8 @@ for r in Instance_list:
             
 #%% Saving and Plotting
 
-
+        Cost_diff = Cost_mps_pert - Cost_mps_strd
+        
         # np.save(location+str(n)+'R'+str(r)+'/N'+str(N)+'D'+str(Dmax)+'_strd.npy',Cost_mps_strd)
         # np.save(location+str(n)+'R'+str(r)+'/N'+str(N)+'D'+str(Dmax)+'_pert.npy',Cost_mps_pert)
         # np.save(location+str(n)+'R'+str(r)+'/N'+str(N)+'D'+str(Dmax)+'_proj0.npy',Cost_mps_proj0)
@@ -378,7 +380,7 @@ for r in Instance_list:
         plt.ylabel('Gamma')
         plt.xlabel('Beta')
         plt.title('Q'+str(n)+'R'+str(r)+'\n C_pert - C_std for Pert_const = '+str(Pert_const))
-        ax.plot_surface(G,B,Cost_mps_pert - Cost_mps_strd, cmap = 'jet', rstride=1, cstride=1, linewidth=0, antialiased=False)
+        ax.plot_surface(G,B,Cost_diff, cmap = 'jet', rstride=1, cstride=1, linewidth=0, antialiased=False)
         plt.show()
         # plt.savefig(location+str(n)+tag+str(r)+'/GridData/N100D'+str(Dmax)+'.png')
         # plt.close(fig)
